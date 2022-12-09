@@ -6,39 +6,51 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:32:51 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/08 19:40:54 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/09 19:30:26 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	init_thread_philo(t_philo src, t_philo *dest)
+void	init_thread_philo(void *philo_params, t_philo *dest)
 {
-	dest->np =  src.np;
-	dest->ttd = src.ttd;
-	dest->tte = src.tte;
-	dest->tts = src.tts;
-	dest->pms = src.pms;
-	dest->id = src.id;
-	dest->mutex = src.mutex;
+	t_philo	*src;
+	
+	src = (t_philo*)(philo_params);
+	dest->np =  src->np;
+	dest->ttd = src->ttd * 1000;
+	dest->tte = src->tte * 1000;
+	dest->tts = src->tts * 1000;
+	dest->pms = src->pms;
+	dest->id = src->id;
+	dest->mutex = src->mutex;
+	dest->fork = src->fork;
 }
 
 void	*thread_function(void * philo_params)
 {
-	t_philo	*tmp_philo;
 	t_philo	thread_philo;
 	int i;
+	int	r_pos_fork;
+	int	l_pos_fork;
 	
 	i = 0;
-	tmp_philo = (t_philo*)(philo_params);
-	init_thread_philo(*tmp_philo, &thread_philo);
+	init_thread_philo(philo_params, &thread_philo);
 	while (21)
-	{
-		if (thread_philo.id % 2 == 0)
-			__eat(&thread_philo);
-		// else
-		// 	__sleep(thread_philo);
-		// __think(thread_philo);
+	{	
+		//	Set pos fork	/////////////////
+		l_pos_fork = thread_philo.id - 1;
+		if (thread_philo.id == 1)
+			r_pos_fork = thread_philo.np - 1;
+		else
+			r_pos_fork = thread_philo.id - 2;
+		/////////////////////////////////////
+		if (thread_philo.id % 2 == 1)
+			usleep(1000);
+		__eat(&thread_philo);
+		// if(thread_philo.fork[l_pos_fork] == 1 
+		// 	&& thread_philo.fork[r_pos_fork] == 1)
+		// 	__eat(&thread_philo);
 	}
 	return (NULL);
 }
@@ -48,15 +60,23 @@ bool	init_thread(t_philo *philo)
 	int		i;
 	
 	i = -1;
-	while (++i < philo->np + 1)
+	while (++i < philo->np)
 	{
 		philo->id = i + 1;
 		if (pthread_create(&philo->thread_id[i], NULL, thread_function, philo))
 			return (false);
-		usleep(100000);
+		usleep(100);
 	}
 	i = -1;
 	while (++i < philo->np)
 		pthread_join(philo->thread_id[i], NULL);
 	return (true);
 }
+/*
+
+1sec sleep
+time_stamp = 16:45:30
+while (time_stamp < time_stamp + 1)
+	usleep(1000);
+	gettimeofaday(&time_stamp, NULL);
+*/

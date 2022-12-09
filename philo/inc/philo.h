@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:35:44 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/08 19:04:35 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/09 16:35:14 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <string.h>
 
 /*	<thread.c>	*/
 

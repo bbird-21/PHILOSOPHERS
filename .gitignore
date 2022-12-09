@@ -1,8 +1,9 @@
 # Prerequisites
 *.d
+test
 
 # Object files
-*.o
+philo/obj/
 *.ko
 *.obj
 *.elf

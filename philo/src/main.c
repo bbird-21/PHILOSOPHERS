@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:16:55 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/08 19:41:04 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/09 19:36:36 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,15 @@
 
 //	Gerer le temps gettimeos addition des deux elements de la structure
 //	Afficher les messages a l'inifi sans gerer la mort
+
+static void	init_fork(t_philo *philo)
+{
+	int	i;
+
+	i = -1;
+	while (++i < philo->np)
+		philo->fork[i] = 1;
+}
 
 static bool	init_philo(int argc, char **argv, t_philo *philo)
 {
@@ -33,9 +42,11 @@ static bool	init_philo(int argc, char **argv, t_philo *philo)
 		|| (argc < 5 || argc > 6))
 			return (false);
 	philo->thread_id = malloc(sizeof(*philo->thread_id) * philo->np);
+	philo->fork = malloc(sizeof(*philo->fork) * (philo->np));
 	philo->mutex = malloc(sizeof(*philo->mutex) * (philo->np));
 	while (++i < philo->np)
 		pthread_mutex_init(&philo->mutex[i], NULL);
+	init_fork(philo);
 	return (true);
 }
 

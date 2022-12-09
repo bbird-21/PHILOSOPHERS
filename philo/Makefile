@@ -28,7 +28,7 @@ $(OBJ_PATH)%.o : $(SRC_PATH)%.c
 	@echo [CC] $<
 	@$(CC) $(CFLAGS) -c $< -o $@ -I $(INC_PATH)
 
-test : CFLAGS= -Wall -Wextra
+test : CFLAGS= -Wall -Wextra -g3
 
 
 all : $(NAME)
