@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:35:44 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/09 16:35:14 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/10 18:06:31 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,7 @@
 # include <string.h>
 
 /*	<thread.c>	*/
-
-
+void	print_state(t_philo philo, int state);
 bool	init_thread(t_philo *philo);
 
 /*	<parsing.c>	*/

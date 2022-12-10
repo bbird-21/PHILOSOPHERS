@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 test
+test.c
 
 # Object files
 philo/obj/

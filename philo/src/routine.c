@@ -6,13 +6,13 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:25:23 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/09 19:58:10 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/10 19:09:20 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	print_state(t_philo philo, int state)
+void	print_state(t_philo philo, int state)
 {
 	struct timeval	t;
 	const char	*state_arr[LENGHT] = {
@@ -27,7 +27,15 @@ static void	print_state(t_philo philo, int state)
 		philo.id, (char *)state_arr[state]);
 }
 
-void	print_info(t_philo philo, int r_pos_fork, int l_pos_fork)
+static void	print_state_fork(t_philo philo, char c)
+{
+	struct timeval	t;
+
+	gettimeofday(&t, NULL);
+	printf("%ld %c_FORK_UNLOCKED_BY : %d\n", (t.tv_sec * 1000) + (t.tv_usec / 1000), c, philo.id);
+}
+
+static void	print_info(t_philo philo, int r_pos_fork, int l_pos_fork)
 {
 	printf("ID_PHILO : %d\t", philo.id);
 	printf("l_pos : %d\tstate : %d\n", l_pos_fork, philo.fork[l_pos_fork]);
@@ -50,27 +58,24 @@ void	__eat(t_philo *philo)
 		r_pos_fork = philo->id - 2;
 	// print_info(*philo, r_pos_fork, l_pos_fork);
 	//	If we lock mutex or if we train another time
-	if (philo->fork[l_pos_fork] == 0)
-		return ;
+	// printf("l_pos_fork : %d\tr_pos_fork : %d\tphilo_id : %d\n", l_pos_fork, r_pos_fork, philo->id);
 	pthread_mutex_lock(&philo->mutex[l_pos_fork]);
 	//	Lock the fork
-	philo->fork[l_pos_fork] = 0;
 	print_state(*philo, FORK);
+	// printf("l_pos_fork : %d\n", l_pos_fork);
 	pthread_mutex_lock(&philo->mutex[r_pos_fork]);
 
 	//	All prerequisite are respected
 	//	Lock the fork
-	philo->fork[r_pos_fork] = 0;
 	print_state(*philo, FORK);
-	
+	// printf("r_pos_fork : %d\n", r_pos_fork);
 	print_state(*philo, EAT);
 	usleep(philo->tte);
 	
 	pthread_mutex_unlock(&philo->mutex[l_pos_fork]);
-	philo->fork[l_pos_fork] = 1;
+	// print_state_fork(*philo, 'L');
 	pthread_mutex_unlock(&philo->mutex[r_pos_fork]);
-	philo->fork[r_pos_fork] = 1;
-	// printf("UNLOCK_FORK_PHILO_ID %d\n", philo->id);
+	// // print_state_fork(*philo, 'R');
 	__sleep(philo);
 }
 
