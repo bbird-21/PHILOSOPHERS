@@ -2,7 +2,7 @@ NAME = philo
 
 CC = cc
 
-CFLAGS = -Wall -Werror -Wextra -MMD
+# CFLAGS = -Wall -Werror -Wextra -MMD
 
 
 SRC_PATH = src/
@@ -28,7 +28,7 @@ $(OBJ_PATH)%.o : $(SRC_PATH)%.c
 	@echo [CC] $<
 	@$(CC) $(CFLAGS) -c $< -o $@ -I $(INC_PATH)
 
-test : CFLAGS= -Wall -Wextra -g3
+test : CFLAGS= -Wall -Wextra -g3 -MMD
 
 
 all : $(NAME)

@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:32:51 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/10 19:17:23 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/15 23:45:05 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,48 +29,57 @@ void	init_thread_philo(void *philo_params, t_philo *dest)
 
 void	*thread_function(void * philo_params)
 {
-	t_philo	thread_philo;
+	t_philo	*thread_philo;
 	int i;
 	int	r_pos_fork;
 	int	l_pos_fork;
 	
 	i = 0;
-	init_thread_philo(philo_params, &thread_philo);
-	while (21)
-	{	
-		//	Set pos fork	/////////////////
-		l_pos_fork = thread_philo.id - 1;
-		if (thread_philo.id == 1)
-			r_pos_fork = thread_philo.np - 1;
-		else
-			r_pos_fork = thread_philo.id - 2;
-		/////////////////////////////////////
-		if (thread_philo.id % 2 == 1)
-		{
-			print_state(thread_philo, THINK);
-			usleep(1000);
-		}
-		__eat(&thread_philo);
-	}
+	thread_philo = philo_params;
+	printf("%d philo->np = %d\n", thread_philo->id, thread_philo->ttd);
+	printf("philo->shared_mem.test : %d\n", thread_philo->shared_mem.test);
+	if (thread_philo->id == 2)
+		thread_philo->id = 21;
+	// init_thread_philo(philo_params, &thread_philo);
+	// while (21)
+	// {	
+	// 	//	Set pos fork	/////////////////
+	// 	l_pos_fork = thread_philo.id - 1;
+	// 	if (thread_philo.id == 1)
+	// 		r_pos_fork = thread_philo.np - 1;
+	// 	else
+	// 		r_pos_fork = thread_philo.id - 2;
+	// 	/////////////////////////////////////
+	// 	if (thread_philo.id % 2 == 1)
+	// 		usleep(1000);
+	// 	__eat(&thread_philo);
+	// }
 	return (NULL);
 }
 
-bool	init_thread(t_philo *philo)
+void	test(t_philo *philo)
+{
+	printf("%d philo->np = %d\n", philo->id, philo->ttd);
+	philo->id = 21;
+}
+
+bool	init_thread(t_philo **arr_philo)
 {
 	int		i;
-	
+	pthread_t	j;
+
 	i = -1;
-	while (++i < philo->np)
+	// printf("arr_philo->test : %d\n", (*arr_philo)->shared_mem->test);
+	while (++i < (*arr_philo)->np)
 	{
-		philo->id = i + 1;
-		if (pthread_create(&philo->thread_id[i], NULL, thread_function, philo))
+		// printf("i : %d\n", i);
+		if (pthread_create(&(*arr_philo)->thread_id[i], NULL, thread_function, &(*arr_philo)[i]))
 			return (false);
 		usleep(100);
 	}
 	i = -1;
-	while (++i < philo->np)
-		pthread_join(philo->thread_id[i], NULL);
+	while (++i < (*arr_philo)->np)
+		pthread_join((*arr_philo)->thread_id[i], NULL);
 	return (true);
 }
 
-// time_stamp = 16:45:30
