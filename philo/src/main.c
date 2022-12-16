@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:16:55 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/15 23:45:37 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/16 01:00:02 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ t_philo	*init_arr_philo(t_philo philo_params)
 	philo = malloc(sizeof(*philo) * (philo_params.np));
 
 	// printf("philo->shared_mem->test : %d\n", philo->shared_mem.test);
-	philo->shared_mem.test = 21;
 	while (i < philo_params.np)
 	{
 		philo[i].np = philo_params.np;
@@ -131,5 +130,5 @@ int	main(int argc, char **argv)
 		return (printf("pthread_create encountered an error\n"));
 	// if (!check_death(&philo, philo.tts))
 	// 	printf("philo is died\n");
-	printf("philo->id : %d\n", arr_philo[2].id);
+	// printf("philo->shared_mem : %d\n", arr_philo[2].shared_mem.test);
 }

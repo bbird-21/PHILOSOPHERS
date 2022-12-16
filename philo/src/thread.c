@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:32:51 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/15 23:45:05 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/16 01:05:31 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,17 @@ void	*thread_function(void * philo_params)
 	int i;
 	int	r_pos_fork;
 	int	l_pos_fork;
+	static	pthread_mutex_t	test;
 	
 	i = 0;
 	thread_philo = philo_params;
-	printf("%d philo->np = %d\n", thread_philo->id, thread_philo->ttd);
-	printf("philo->shared_mem.test : %d\n", thread_philo->shared_mem.test);
+	// printf("%d philo->np = %d\n", thread_philo->id, thread_philo->ttd);
+	
+	pthread_mutex_lock(&test);
+	printf("Hey %d !\n", thread_philo->id);
+	usleep(3000000);
+	printf("Bye  %d !\n", thread_philo->id);
+	pthread_mutex_unlock(&test);
 	if (thread_philo->id == 2)
 		thread_philo->id = 21;
 	// init_thread_philo(philo_params, &thread_philo);

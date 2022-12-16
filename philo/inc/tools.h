@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:36:20 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/15 23:43:41 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/16 00:55:37 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ typedef struct s_philo t_philo;
 
 typedef struct s_shared_mem
 {
-	int		test;
-	t_philo *philo;
+	pthread_mutex_t		test;
+	t_philo 			*philo;
 }			t_shared_mem;
 
 typedef struct s_philo
