@@ -2,6 +2,7 @@
 *.d
 test
 test.c
+.vscode/
 
 # Object files
 philo/obj/

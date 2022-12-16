@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:16:55 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/16 01:00:02 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/16 14:30:19 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,9 @@ static bool	init_philo(int argc, char **argv, t_philo *philo)
 		|| (philo->tts == -1) || (philo->pms == -1)
 		|| (philo->np < 1))
 			return (false);
-	philo->fork = malloc(sizeof(*philo->fork) * (philo->np));
-	philo->mutex = malloc(sizeof(*philo->mutex) * (philo->np));
-	// philo->thread_id = malloc(sizeof(*philo->thread_id) * (philo->np) + 1);
-	while (++i < philo->np)
+	// philo->mutex = malloc(sizeof(*philo->mutex) * (philo->np));
+	philo->thread_id = malloc(sizeof(*philo->thread_id) * (philo->np) + 1);
+	// while (++i < philo->np)
 		pthread_mutex_init(&philo->mutex[i], NULL);
 	// init_fork(philo);
 	return (true);

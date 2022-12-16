@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:32:51 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/16 01:05:31 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/16 14:31:07 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,11 @@ void	init_thread_philo(void *philo_params, t_philo *dest)
 
 void	*thread_function(void * philo_params)
 {
-	t_philo	*thread_philo;
-	int i;
-	int	r_pos_fork;
-	int	l_pos_fork;
-	static	pthread_mutex_t	test;
+	t_philo					*thread_philo;
+	int 					i;
+	int						r_pos_fork;
+	int						l_pos_fork;
+	static pthread_mutex_t	test;
 	
 	i = 0;
 	thread_philo = philo_params;
