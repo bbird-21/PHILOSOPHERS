@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:35:44 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/15 23:39:12 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/16 16:49:22 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 
 /*	<thread.c>	*/
 void	print_state(t_philo philo, int state);
-bool	init_thread(t_philo **philo);
+bool	init_thread(t_philo **arr_philo);
 
 /*	<parsing.c>	*/
 int		parse_args(char *str);
@@ -33,5 +33,8 @@ int		parse_args(char *str);
 void	__eat(t_philo *philo);
 void	__think(t_philo *philo);
 void	__sleep(t_philo *philo);
+
+
+void	print_philo(t_philo *philo);
 
 #endif

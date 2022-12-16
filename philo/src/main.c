@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:16:55 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/16 14:30:19 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/16 17:40:47 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,33 +43,33 @@ static bool	init_philo(int argc, char **argv, t_philo *philo)
 		|| (philo->np < 1))
 			return (false);
 	// philo->mutex = malloc(sizeof(*philo->mutex) * (philo->np));
-	philo->thread_id = malloc(sizeof(*philo->thread_id) * (philo->np) + 1);
 	// while (++i < philo->np)
-		pthread_mutex_init(&philo->mutex[i], NULL);
+	// pthread_mutex_init(&philo->mutex[i], NULL);
 	// init_fork(philo);
 	return (true);
 }
 
-t_philo	*init_arr_philo(t_philo philo_params)
+void init_arr_philo(t_philo **arr_philo, t_philo philo_params)
 {
-	t_philo	*philo;
+	// t_philo	*philo;
+	
+	*arr_philo = malloc(sizeof(t_philo) * philo_params.np);
 	int		i;
 	
 	i = 0;
-	philo = malloc(sizeof(*philo) * (philo_params.np));
-
-	// printf("philo->shared_mem->test : %d\n", philo->shared_mem.test);
 	while (i < philo_params.np)
 	{
-		philo[i].np = philo_params.np;
-		philo[i].ttd = philo_params.ttd;
-		philo[i].tte = philo_params.tte;
-		philo[i].tts = philo_params.tts;
-		philo[i].pms = philo_params.pms;
-		philo[i].id = i;
+		(*arr_philo)[i].np = philo_params.np;
+		(*arr_philo)[i].ttd = philo_params.ttd;
+		(*arr_philo)[i].tte = philo_params.tte;
+		(*arr_philo)[i].tts = philo_params.tts;
+		(*arr_philo)[i].pms = philo_params.pms;
+		(*arr_philo)[i].id = i;
+		// print_philo(&philo[i]);
 		i++;
 	}
-	return (philo);
+	// *arr_philo = philo;
+	// printf("arr_philo->id : %d\n", (*arr_philo)[2].id);
 }
 
 bool	check_death(t_philo *philo ,int	time_to)
@@ -77,7 +77,7 @@ bool	check_death(t_philo *philo ,int	time_to)
 	struct timeval	t;
 	long			time_stamp;
 	long			die_time;
-
+	
 	die_time = 0;
 	time_stamp = 0;
 	gettimeofday(&t, NULL);
@@ -119,12 +119,18 @@ int	main(int argc, char **argv)
 {
 	t_philo			philo;
 	t_philo			*arr_philo;
-	
+
 	if (!init_philo(argc, argv, &philo))
 		return (printf("Invalid arguments\n"));
-	arr_philo = init_arr_philo(philo);
+	init_arr_philo(&arr_philo, philo);
 	// test(&arr_philo[0]);
-	
+	// arr_philo = malloc(sizeof(t_philo) * philo.np);
+	// int	i = 0;
+	// while (i < philo.np)
+	// {
+	// 	arr_philo[i].id = i + 10;
+	// 	i++;
+	// }
 	if (!init_thread(&arr_philo))
 		return (printf("pthread_create encountered an error\n"));
 	// if (!check_death(&philo, philo.tts))

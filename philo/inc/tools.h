@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:36:20 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/16 14:29:48 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/16 15:42:06 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 # define INT_MAX 2147483647
 # define INT_MIN -2147483648
 # define INT_OVERFLOW 2147483648
+
+# define N write(1, "\n", 1);
 
 typedef enum e_state {
 	FORK,
@@ -44,7 +46,9 @@ typedef struct s_philo
 	int				pms;
 	int				id;
 	long			death_time;
-	pthread_t		*thread_id;
+	pthread_t		thread_id;
+	pthread_mutex_t	*mutex;
+	int				*fork;
 }		t_philo;		
 
 

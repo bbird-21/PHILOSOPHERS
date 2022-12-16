@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:18:38 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/07 15:52:45 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/16 15:43:38 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,44 @@ long	ft_atoi(const char *str)
 int	ft_isdigit(int c)
 {
 	return (c >= '0' && c <= '9');
+}
+
+void	ft_putchar(char c)
+{
+	write(1, &c, 1);
+}
+
+void	ft_putnbr(int n)
+{
+	long long	nb;
+
+	nb = n;
+	if (nb < 0)
+	{
+		ft_putchar('-');
+		nb = -nb;
+	}
+	if (nb > 9)
+	{
+		ft_putnbr(nb / 10);
+		ft_putnbr(nb % 10);
+	}
+	else
+		ft_putchar(nb + 48);
+}
+
+void	ft_putstr(const char *str)
+{
+	while (*str++)
+		ft_putchar(*str);
+}
+
+void	print_philo(t_philo *philo)
+{
+	ft_putstr("==========philo=========\n");
+	ft_putnbr(philo->id);
+	N
+	ft_putnbr(philo->np);
+	N
+	ft_putstr("========================\n\n");
 }
