@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:32:51 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/17 01:05:37 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/17 20:55:14 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,13 @@ void	*thread_function(void * philo_params)
 	philo = (t_philo*)philo_params;
 	while (21)
 	{	
+		pthread_mutex_lock(&philo->shared->m_state);
 		if (philo->shared->state == 0)
+		{
+			pthread_mutex_unlock(&philo->shared->m_state);
 			break ;
+		}
+		pthread_mutex_unlock(&philo->shared->m_state);
 		if (philo->id % 2 == 1)
 			usleep(1000);
 		__eat(philo);
@@ -44,11 +49,13 @@ bool	init_thread(t_philo **arr_philo)
 			return (false);
 		usleep(100);
 	}
+	pthread_mutex_lock(&(*arr_philo)[0].shared->m_state);
 	if ((*arr_philo)[0].shared->state == 0)
 	{
 		while (++i < (*arr_philo)[0].np)
 			pthread_join((*arr_philo)[i].thread_id, NULL);
 	}
+	pthread_mutex_unlock(&(*arr_philo)[0].shared->m_state);
 	return (true);
 }
 

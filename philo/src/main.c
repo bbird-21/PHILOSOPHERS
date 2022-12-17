@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:16:55 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/17 01:17:03 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/17 20:59:51 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ bool	init_shared_mem(t_shared_mem *shared_mem, t_philo philo)
 	while (++i < philo.np)
 		pthread_mutex_init(&(shared_mem->fork[i]), NULL);
 	pthread_mutex_init(&(shared_mem->msg), NULL);
+	pthread_mutex_init(&(shared_mem->m_state), NULL);
 	return (true);
 }
 
@@ -94,12 +95,15 @@ bool	mower(t_philo *arr_philo, t_shared_mem *shared_mem)
 		time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
 		while (++i < arr_philo[0].np)
 		{
+			pthread_mutex_lock(&arr_philo[0].shared->m_state);
 			if (time_stamp >= shared_mem->death_time[i])
 			{
 				shared_mem->state = 0;
 				printf("%ld %d died\n", time_stamp, i + 1);
+				pthread_mutex_unlock(&arr_philo[0].shared->m_state);
 				return (false);
 			}
+			pthread_mutex_unlock(&arr_philo[0].shared->m_state);
 		}
 		usleep(1000);
 	}

@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:25:23 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/17 01:27:55 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/17 21:03:19 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static void	print_info(t_philo philo, int r_pos_fork, int l_pos_fork)
 	usleep(1000000);
 }
 
-void	print_state(t_philo *philo, int state)
+void	print_state(t_philo *philo, int state, int r_pos_fork, int l_pos_fork)
 {
 	struct timeval	t;
 	const char	*state_arr[LENGHT] = {
@@ -39,7 +39,12 @@ void	print_state(t_philo *philo, int state)
 	};
 	
 	if (philo->shared->state == 0)
+	{
+		// pthread_mutex_unlock(&philo->shared->fork[l_pos_fork]);
+		// pthread_mutex_unlock(&philo->shared->fork[r_pos_fork]);
+		// pthread_mutex_unlock(&philo->shared->m_state);
 		return ;
+	}
 	gettimeofday(&t, NULL);
 	printf("%ld %d %s", (t.tv_sec * 1000) + (t.tv_usec / 1000),
 		philo->id, (char *)state_arr[state]);
@@ -65,8 +70,13 @@ bool	sleep_time(int tts, t_philo *philo)
 	finish_time = time_stamp + (tts / 1000);
 	while (time_stamp < finish_time)
 	{
+		pthread_mutex_lock(&philo->shared->m_state);
 		if (philo->shared->state == 0)
+		{
+			pthread_mutex_unlock(&philo->shared->m_state);
 			return (false);
+		}
+		pthread_mutex_unlock(&philo->shared->m_state);
 		gettimeofday(&t, NULL);
 		time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
 		usleep(100);
@@ -87,50 +97,42 @@ void	__eat(t_philo *philo)
 		r_pos_fork = philo->np - 1;
 	else
 		r_pos_fork = philo->id - 2;
-	if (philo->shared->state == 0)
-		return ;
 	pthread_mutex_lock(&philo->shared->fork[l_pos_fork]);
 	//	Lock the fork
 	pthread_mutex_lock(&philo->shared->msg);
-	print_state(philo, FORK);	
+	print_state(philo, FORK, r_pos_fork, l_pos_fork);	
 	pthread_mutex_unlock(&philo->shared->msg);
 	pthread_mutex_lock(&philo->shared->fork[r_pos_fork]);
 
 	//	All prerequisite are respected
 	//	Lock the fork
-	if (philo->shared->state == 0)
-		return ;
 	pthread_mutex_lock(&philo->shared->msg);
-	print_state(philo, FORK);
+	print_state(philo, FORK, r_pos_fork, l_pos_fork);
 	pthread_mutex_unlock(&philo->shared->msg);
 	
 	pthread_mutex_lock(&philo->shared->msg);
-	print_state(philo, EAT);
+	print_state(philo, EAT, r_pos_fork, l_pos_fork);
 	pthread_mutex_unlock(&philo->shared->msg);
 	philo->shared->death_time[philo->id - 1] = get_death_time(philo->ttd);
 	sleep_time(philo->tte, philo);
 	pthread_mutex_unlock(&philo->shared->fork[l_pos_fork]);
 	pthread_mutex_unlock(&philo->shared->fork[r_pos_fork]);
-	__sleep(philo);
+	__sleep(philo, r_pos_fork, l_pos_fork);
 }
 
-void	__think(t_philo *philo)
+void	__think(t_philo *philo, int r_pos_fork, int l_pos_fork)
 {
-	if (philo->shared->state == 0)
-		return ;
 	pthread_mutex_lock(&philo->shared->msg);
-	print_state(philo, THINK);
+	print_state(philo, THINK, r_pos_fork, l_pos_fork);
 	pthread_mutex_unlock(&philo->shared->msg);
 	// usleep(1000);
 }
 
-void	__sleep(t_philo *philo)
+void	__sleep(t_philo *philo, int r_pos_fork, int l_pos_fork)
 {
-	if (philo->shared->state == 0)
-		return ;
 	pthread_mutex_lock(&philo->shared->msg);
-	print_state(philo, SLEEP);
+	print_state(philo, SLEEP, r_pos_fork, l_pos_fork);
 	pthread_mutex_unlock(&philo->shared->msg);
 	sleep_time(philo->tts, philo);
-	__think(philo);
+	__think(philo, r_pos_fork, l_pos_fork);
 }

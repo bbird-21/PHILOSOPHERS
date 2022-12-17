@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:36:20 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/17 00:42:18 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/17 20:17:46 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ typedef struct s_shared_mem
 {
 	pthread_mutex_t		*fork;
 	pthread_mutex_t		msg;
+	pthread_mutex_t		function;
+	pthread_mutex_t		m_state;
 	long				*death_time;
 	int					state;
 	int					a;

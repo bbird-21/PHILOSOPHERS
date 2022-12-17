@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:35:44 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/17 01:28:19 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/17 20:09:50 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,10 @@
 # include <string.h>
 
 /*	<thread.c>	*/
-void	print_state(t_philo *philo, int state);
+void	print_state(t_philo *philo, int state, int r_pos_fork, int l_pos_fork);
 bool	init_thread(t_philo **arr_philo);
 
-/*	<parsing.c>	*/
+/*	<parsing.c>	*/	
 int		parse_args(char *str);
 
 /*	<routine.c	*/
@@ -35,8 +35,8 @@ bool	sleep_time(int tts, t_philo *philo);
 
 /*	Required by thread_function in <thread.c> to apply routine*/
 void	__eat(t_philo *philo);
-void	__think(t_philo *philo);
-void	__sleep(t_philo *philo);
+void	__think(t_philo *philo, int r_pos_fork, int l_pos_fork);
+void	__sleep(t_philo *philo, int r_pos_fork, int l_pos_fork);
 
 
 void	print_philo(t_philo *philo);
