@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:36:20 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/16 15:42:06 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/17 00:42:18 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,14 @@ typedef enum e_state {
 	LENGHT
 }	t_state;
 
-typedef struct s_philo t_philo;
 
 typedef struct s_shared_mem
 {
-	pthread_mutex_t		*mutex;
+	pthread_mutex_t		*fork;
+	pthread_mutex_t		msg;
+	long				*death_time;
+	int					state;
+	int					a;
 }						t_shared_mem;
 
 typedef struct s_philo
@@ -45,11 +48,11 @@ typedef struct s_philo
 	int				tts;
 	int				pms;
 	int				id;
-	long			death_time;
+	t_shared_mem	*shared;
 	pthread_t		thread_id;
 	pthread_mutex_t	*mutex;
 	int				*fork;
-}		t_philo;		
+}					t_philo;
 
 
 #endif

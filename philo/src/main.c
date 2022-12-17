@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:16:55 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/16 17:40:47 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/17 01:17:03 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,6 @@
 //	Gerer le temps gettimeos addition des deux elements de la structure
 //	Afficher les messages a l'inifi sans gerer la mort
 
-// static void	init_fork(t_philo *philo)
-// {
-// 	int	i;
-
-// 	i = -1;
-// 	while (++i < philo->np)
-// 		philo->fork[i] = 1;
-// }
 
 static bool	init_philo(int argc, char **argv, t_philo *philo)
 {
@@ -42,98 +34,111 @@ static bool	init_philo(int argc, char **argv, t_philo *philo)
 		|| (philo->tts == -1) || (philo->pms == -1)
 		|| (philo->np < 1))
 			return (false);
-	// philo->mutex = malloc(sizeof(*philo->mutex) * (philo->np));
-	// while (++i < philo->np)
-	// pthread_mutex_init(&philo->mutex[i], NULL);
-	// init_fork(philo);
 	return (true);
 }
 
-void init_arr_philo(t_philo **arr_philo, t_philo philo_params)
+
+bool init_arr_philo(t_philo **arr_philo, t_philo philo_params,
+		t_shared_mem *shared_mem)
 {
-	// t_philo	*philo;
-	
-	*arr_philo = malloc(sizeof(t_philo) * philo_params.np);
 	int		i;
-	
+
 	i = 0;
+ 	*arr_philo = malloc(sizeof(t_philo) * philo_params.np);
+	if (!*arr_philo)
+		return (false);
 	while (i < philo_params.np)
 	{
+		(*arr_philo)[i].shared = shared_mem;
 		(*arr_philo)[i].np = philo_params.np;
 		(*arr_philo)[i].ttd = philo_params.ttd;
 		(*arr_philo)[i].tte = philo_params.tte;
 		(*arr_philo)[i].tts = philo_params.tts;
 		(*arr_philo)[i].pms = philo_params.pms;
-		(*arr_philo)[i].id = i;
-		// print_philo(&philo[i]);
+		(*arr_philo)[i].id = i + 1;
+		(*arr_philo)[i].shared->death_time[i] = get_death_time(philo_params.ttd);
 		i++;
 	}
-	// *arr_philo = philo;
-	// printf("arr_philo->id : %d\n", (*arr_philo)[2].id);
-}
-
-bool	check_death(t_philo *philo ,int	time_to)
-{
-	struct timeval	t;
-	long			time_stamp;
-	long			die_time;
-	
-	die_time = 0;
-	time_stamp = 0;
-	gettimeofday(&t, NULL);
-	time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
-	die_time = time_stamp + (time_to / 1000);
-	// long double tmp = die_time - time_stamp; 
-	// printf("die_time : %ld\n", die_time);
-	// printf("time_stamp : %ld\n", time_stamp);
-	// printf("time_stamp - finish_stamp : %Lf\n", tmp);
-	int	i;
-
-	i = 0;
-	// printf("time_stamp :  %ld\nfinish_time : %ld\n", time_stamp, die_time);
-	while (21)
-	{
-		gettimeofday(&t, NULL);
-		time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
-		usleep(1000);
-		if (time_stamp > die_time)
-			return (false);
-		// philo->ttd -= 1000;
-		if (philo->ttd == 0)
-			return (false);
-	}
-	printf("i : %d\n", i);
-	printf("time_stamp : %ld\n", time_stamp);
-	printf("ttd : %d\n", philo->ttd);
 	return (true);
 }
 
-// void	test(t_philo *philo)
-// {
-// 	printf("%d philo->np = %d\n", philo->id, philo->ttd);
+bool	init_shared_mem(t_shared_mem *shared_mem, t_philo philo)
+{
+	int			i;
+	
+	i = -1;
+	shared_mem->a = 21;
+	shared_mem->fork = malloc(sizeof(*shared_mem->fork) * philo.np);
+	shared_mem->death_time = malloc(sizeof(*shared_mem->death_time) * philo.np);
+	shared_mem->state = 1;
+	if (!shared_mem->fork)
+		return (false);
+	while (++i < philo.np)
+		pthread_mutex_init(&(shared_mem->fork[i]), NULL);
+	pthread_mutex_init(&(shared_mem->msg), NULL);
+	return (true);
+}
 
-// }
+bool	mower(t_philo *arr_philo, t_shared_mem *shared_mem)
+{
+	struct timeval	t;
+	long			time_stamp;
+	gettimeofday(&t, NULL);
+	time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+	int	i;
 
+	while (21)
+	{
+		i = -1;
+		gettimeofday(&t, NULL);
+		time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+		while (++i < arr_philo[0].np)
+		{
+			if (time_stamp >= shared_mem->death_time[i])
+			{
+				shared_mem->state = 0;
+				printf("%ld %d died\n", time_stamp, i + 1);
+				return (false);
+			}
+		}
+		usleep(1000);
+	}
+	return (true);
+}
 
 int	main(int argc, char **argv)
 {
 	t_philo			philo;
 	t_philo			*arr_philo;
+	t_shared_mem	shared_mem;
+	int				i;
 
+	i = -1;
+	
 	if (!init_philo(argc, argv, &philo))
 		return (printf("Invalid arguments\n"));
-	init_arr_philo(&arr_philo, philo);
-	// test(&arr_philo[0]);
-	// arr_philo = malloc(sizeof(t_philo) * philo.np);
-	// int	i = 0;
-	// while (i < philo.np)
-	// {
-	// 	arr_philo[i].id = i + 10;
-	// 	i++;
-	// }
+	if (!init_shared_mem(&shared_mem, philo))
+		return (printf("ENOMEM : Out of memory\n"));
+	if (!init_arr_philo(&arr_philo, philo, &shared_mem))
+		return (printf("ENOMEM : Out of memory\n"));
 	if (!init_thread(&arr_philo))
 		return (printf("pthread_create encountered an error\n"));
-	// if (!check_death(&philo, philo.tts))
-	// 	printf("philo is died\n");
-	// printf("philo->shared_mem : %d\n", arr_philo[2].shared_mem.test);
+	mower(arr_philo, &shared_mem);
+	while (++i < philo.np)
+		pthread_join(arr_philo[i].thread_id, NULL);
 }
+
+// struct timeval t;
+	// long			time_stamp;
+	// long			finish_time;
+
+
+	// gettimeofday(&t, NULL);
+	// time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+	// printf("time_stamp : %ld\n", time_stamp);
+
+	// sleep_time(1000000);
+	
+	// gettimeofday(&t, NULL);
+	// time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+	// printf("time_stamp : %ld\n", time_stamp);

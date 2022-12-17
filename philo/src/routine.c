@@ -6,26 +6,11 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:25:23 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/10 19:09:20 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2022/12/17 01:27:55 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	print_state(t_philo philo, int state)
-{
-	struct timeval	t;
-	const char	*state_arr[LENGHT] = {
-		"has taken a fork\n",
-		"is eating\n",
-		"is thinking\n",
-		"is sleeping\n"
-	};
-	
-	gettimeofday(&t, NULL);
-	printf("%ld %d %s", (t.tv_sec * 1000) + (t.tv_usec / 1000),
-		philo.id, (char *)state_arr[state]);
-}
 
 static void	print_state_fork(t_philo philo, char c)
 {
@@ -43,6 +28,52 @@ static void	print_info(t_philo philo, int r_pos_fork, int l_pos_fork)
 	usleep(1000000);
 }
 
+void	print_state(t_philo *philo, int state)
+{
+	struct timeval	t;
+	const char	*state_arr[LENGHT] = {
+		"has taken a fork\n",
+		"is eating\n",
+		"is thinking\n",
+		"is sleeping\n"
+	};
+	
+	if (philo->shared->state == 0)
+		return ;
+	gettimeofday(&t, NULL);
+	printf("%ld %d %s", (t.tv_sec * 1000) + (t.tv_usec / 1000),
+		philo->id, (char *)state_arr[state]);
+}
+
+long	get_death_time(int	ttd)
+{
+	struct timeval	t;
+
+	gettimeofday(&t, NULL);
+	return ((t.tv_sec * 1000) + (t.tv_usec / 1000) + (ttd / 1000));
+}
+
+bool	sleep_time(int tts, t_philo *philo)
+{
+	struct timeval t;
+	long			time_stamp;
+	long			finish_time;
+
+
+	gettimeofday(&t, NULL);
+	time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+	finish_time = time_stamp + (tts / 1000);
+	while (time_stamp < finish_time)
+	{
+		if (philo->shared->state == 0)
+			return (false);
+		gettimeofday(&t, NULL);
+		time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+		usleep(100);
+	}
+	return (true);
+}
+
 void	__eat(t_philo *philo)
 {
 	int	r_pos_fork;
@@ -56,38 +87,50 @@ void	__eat(t_philo *philo)
 		r_pos_fork = philo->np - 1;
 	else
 		r_pos_fork = philo->id - 2;
-	// print_info(*philo, r_pos_fork, l_pos_fork);
-	//	If we lock mutex or if we train another time
-	// printf("l_pos_fork : %d\tr_pos_fork : %d\tphilo_id : %d\n", l_pos_fork, r_pos_fork, philo->id);
-	pthread_mutex_lock(&philo->mutex[l_pos_fork]);
+	if (philo->shared->state == 0)
+		return ;
+	pthread_mutex_lock(&philo->shared->fork[l_pos_fork]);
 	//	Lock the fork
-	print_state(*philo, FORK);
-	// printf("l_pos_fork : %d\n", l_pos_fork);
-	pthread_mutex_lock(&philo->mutex[r_pos_fork]);
+	pthread_mutex_lock(&philo->shared->msg);
+	print_state(philo, FORK);	
+	pthread_mutex_unlock(&philo->shared->msg);
+	pthread_mutex_lock(&philo->shared->fork[r_pos_fork]);
 
 	//	All prerequisite are respected
 	//	Lock the fork
-	print_state(*philo, FORK);
-	// printf("r_pos_fork : %d\n", r_pos_fork);
-	print_state(*philo, EAT);
-	usleep(philo->tte);
+	if (philo->shared->state == 0)
+		return ;
+	pthread_mutex_lock(&philo->shared->msg);
+	print_state(philo, FORK);
+	pthread_mutex_unlock(&philo->shared->msg);
 	
-	pthread_mutex_unlock(&philo->mutex[l_pos_fork]);
-	// print_state_fork(*philo, 'L');
-	pthread_mutex_unlock(&philo->mutex[r_pos_fork]);
-	// // print_state_fork(*philo, 'R');
+	pthread_mutex_lock(&philo->shared->msg);
+	print_state(philo, EAT);
+	pthread_mutex_unlock(&philo->shared->msg);
+	philo->shared->death_time[philo->id - 1] = get_death_time(philo->ttd);
+	sleep_time(philo->tte, philo);
+	pthread_mutex_unlock(&philo->shared->fork[l_pos_fork]);
+	pthread_mutex_unlock(&philo->shared->fork[r_pos_fork]);
 	__sleep(philo);
 }
 
 void	__think(t_philo *philo)
 {
-	print_state(*philo, THINK);
+	if (philo->shared->state == 0)
+		return ;
+	pthread_mutex_lock(&philo->shared->msg);
+	print_state(philo, THINK);
+	pthread_mutex_unlock(&philo->shared->msg);
 	// usleep(1000);
 }
 
 void	__sleep(t_philo *philo)
 {
-	print_state(*philo, SLEEP);
-	usleep(philo->tts);
+	if (philo->shared->state == 0)
+		return ;
+	pthread_mutex_lock(&philo->shared->msg);
+	print_state(philo, SLEEP);
+	pthread_mutex_unlock(&philo->shared->msg);
+	sleep_time(philo->tts, philo);
 	__think(philo);
 }
