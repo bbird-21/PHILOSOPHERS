@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tools.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mmeguedm <mmeguedm@student42.fr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:36:20 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/17 20:17:46 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/01/14 19:27:01 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,11 @@ typedef enum e_state {
 typedef struct s_shared_mem
 {
 	pthread_mutex_t		*fork;
-	pthread_mutex_t		msg;
-	pthread_mutex_t		function;
+	pthread_mutex_t		m_msg;
 	pthread_mutex_t		m_state;
+	int					*n_fork;
 	long				*death_time;
 	int					state;
-	int					a;
 }						t_shared_mem;
 
 typedef struct s_philo

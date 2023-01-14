@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   thread.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mmeguedm <mmeguedm@student42.fr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:32:51 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/17 20:55:14 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/01/14 20:36:12 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,10 @@
 void	*thread_function(void * philo_params)
 {
 	t_philo					*philo;
-	int 					i;
-	int						r_pos_fork;
-	int						l_pos_fork;
-	
+
 	philo = (t_philo*)philo_params;
 	while (21)
-	{	
+	{
 		pthread_mutex_lock(&philo->shared->m_state);
 		if (philo->shared->state == 0)
 		{
@@ -39,10 +36,8 @@ void	*thread_function(void * philo_params)
 bool	init_thread(t_philo **arr_philo)
 {
 	int			i;
-	t_philo 	*tmp;
-	pthread_t	j;
+
 	i = -1;
-	tmp = *arr_philo;
 	while (++i < (*arr_philo)[0].np)
 	{
 		if (pthread_create(&((*arr_philo)[i].thread_id), NULL, thread_function, &(*arr_philo)[i]))

@@ -2,7 +2,7 @@ NAME = philo
 
 CC = cc
 
-# CFLAGS = -Wall -Werror -Wextra -MMD
+CFLAGS = -Wall -Werror -Wextra -MMD
 
 
 SRC_PATH = src/

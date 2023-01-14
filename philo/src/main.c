@@ -3,24 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mmeguedm <mmeguedm@student42.fr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:16:55 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/17 20:59:51 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/01/14 20:46:48 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-//	Gerer le temps gettimeos addition des deux elements de la structure
-//	Afficher les messages a l'inifi sans gerer la mort
-
 
 static bool	init_philo(int argc, char **argv, t_philo *philo)
 {
-	int	i;
-
-	i = -1;
 	if ((argc < 5 || argc > 6))
 		return (false);
 	philo->np = parse_args(argv[1]);
@@ -30,10 +24,10 @@ static bool	init_philo(int argc, char **argv, t_philo *philo)
 	philo->pms = -2;
 	if (argc == 6)
 		philo->pms = parse_args(argv[5]);
-	if ((philo->np == -1) || (philo->ttd == -1) || (philo->tte == -2) 
+	if ((philo->np == -1) || (philo->ttd == -1) || (philo->tte == -2)
 		|| (philo->tts == -1) || (philo->pms == -1)
 		|| (philo->np < 1))
-			return (false);
+ 			return (false);
 	return (true);
 }
 
@@ -65,17 +59,17 @@ bool init_arr_philo(t_philo **arr_philo, t_philo philo_params,
 bool	init_shared_mem(t_shared_mem *shared_mem, t_philo philo)
 {
 	int			i;
-	
+
 	i = -1;
-	shared_mem->a = 21;
 	shared_mem->fork = malloc(sizeof(*shared_mem->fork) * philo.np);
+	shared_mem->n_fork = malloc(sizeof(*shared_mem->n_fork) * philo.np);
 	shared_mem->death_time = malloc(sizeof(*shared_mem->death_time) * philo.np);
 	shared_mem->state = 1;
 	if (!shared_mem->fork)
 		return (false);
 	while (++i < philo.np)
 		pthread_mutex_init(&(shared_mem->fork[i]), NULL);
-	pthread_mutex_init(&(shared_mem->msg), NULL);
+	pthread_mutex_init(&(shared_mem->m_msg), NULL);
 	pthread_mutex_init(&(shared_mem->m_state), NULL);
 	return (true);
 }
@@ -95,15 +89,15 @@ bool	mower(t_philo *arr_philo, t_shared_mem *shared_mem)
 		time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
 		while (++i < arr_philo[0].np)
 		{
-			pthread_mutex_lock(&arr_philo[0].shared->m_state);
+			pthread_mutex_lock(&(arr_philo[0].shared->m_state));
 			if (time_stamp >= shared_mem->death_time[i])
 			{
 				shared_mem->state = 0;
 				printf("%ld %d died\n", time_stamp, i + 1);
-				pthread_mutex_unlock(&arr_philo[0].shared->m_state);
+				pthread_mutex_unlock(&(arr_philo[0].shared->m_state));
 				return (false);
 			}
-			pthread_mutex_unlock(&arr_philo[0].shared->m_state);
+			pthread_mutex_unlock(&(arr_philo[0].shared->m_state));
 		}
 		usleep(1000);
 	}
@@ -118,7 +112,7 @@ int	main(int argc, char **argv)
 	int				i;
 
 	i = -1;
-	
+
 	if (!init_philo(argc, argv, &philo))
 		return (printf("Invalid arguments\n"));
 	if (!init_shared_mem(&shared_mem, philo))
@@ -142,7 +136,7 @@ int	main(int argc, char **argv)
 	// printf("time_stamp : %ld\n", time_stamp);
 
 	// sleep_time(1000000);
-	
+
 	// gettimeofday(&t, NULL);
 	// time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
 	// printf("time_stamp : %ld\n", time_stamp);
