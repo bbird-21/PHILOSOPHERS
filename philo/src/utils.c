@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:18:38 by mmeguedm          #+#    #+#             */
-/*   Updated: 2022/12/16 15:43:38 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/03 15:25:28 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,14 +72,4 @@ void	ft_putstr(const char *str)
 {
 	while (*str++)
 		ft_putchar(*str);
-}
-
-void	print_philo(t_philo *philo)
-{
-	ft_putstr("==========philo=========\n");
-	ft_putnbr(philo->id);
-	N
-	ft_putnbr(philo->np);
-	N
-	ft_putstr("========================\n\n");
 }

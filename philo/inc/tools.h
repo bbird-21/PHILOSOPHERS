@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tools.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmeguedm <mmeguedm@student42.fr>           +#+  +:+       +#+        */
+/*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:36:20 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/01/14 19:27:01 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/03 16:44:58 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ typedef struct s_shared_mem
 	pthread_mutex_t		*fork;
 	pthread_mutex_t		m_msg;
 	pthread_mutex_t		m_state;
+	pthread_mutex_t		m_death_time;
+	int					start_time_ms;
 	int					*n_fork;
 	long				*death_time;
 	int					state;

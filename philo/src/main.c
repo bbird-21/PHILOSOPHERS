@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmeguedm <mmeguedm@student42.fr>           +#+  +:+       +#+        */
+/*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:16:55 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/01/14 20:46:48 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/03 16:32:00 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ bool	init_shared_mem(t_shared_mem *shared_mem, t_philo philo)
 		pthread_mutex_init(&(shared_mem->fork[i]), NULL);
 	pthread_mutex_init(&(shared_mem->m_msg), NULL);
 	pthread_mutex_init(&(shared_mem->m_state), NULL);
+	pthread_mutex_init(&(shared_mem->m_death_time), NULL);
 	return (true);
 }
 
@@ -89,19 +90,34 @@ bool	mower(t_philo *arr_philo, t_shared_mem *shared_mem)
 		time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
 		while (++i < arr_philo[0].np)
 		{
-			pthread_mutex_lock(&(arr_philo[0].shared->m_state));
+			pthread_mutex_lock(&(arr_philo[0].shared->m_death_time));
 			if (time_stamp >= shared_mem->death_time[i])
 			{
+				pthread_mutex_lock(&(arr_philo[0].shared->m_state));
 				shared_mem->state = 0;
 				printf("%ld %d died\n", time_stamp, i + 1);
 				pthread_mutex_unlock(&(arr_philo[0].shared->m_state));
 				return (false);
 			}
-			pthread_mutex_unlock(&(arr_philo[0].shared->m_state));
+			pthread_mutex_unlock(&(arr_philo[0].shared->m_death_time));
 		}
-		usleep(1000);
+		// usleep(1000);
 	}
 	return (true);
+}
+
+void	free_mem(t_philo *arr_philo, t_shared_mem *shared_mem)
+{
+	int	i;
+
+	i = 0;
+
+	free(shared_mem->fork);
+	free(shared_mem->n_fork);
+	free(shared_mem->death_time);
+	free(arr_philo);
+	// free(&(philo->shared->n_fork));
+	// free(&(philo->shared->death_time));
 }
 
 int	main(int argc, char **argv)
@@ -124,6 +140,7 @@ int	main(int argc, char **argv)
 	mower(arr_philo, &shared_mem);
 	while (++i < philo.np)
 		pthread_join(arr_philo[i].thread_id, NULL);
+	free_mem(arr_philo, &shared_mem);
 }
 
 // struct timeval t;
