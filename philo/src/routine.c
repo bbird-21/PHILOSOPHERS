@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:25:23 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/02/03 17:19:28 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/06 16:14:24 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,30 +45,33 @@ bool	print_state(t_philo *philo, int state)
 		pthread_mutex_unlock(&(philo->shared->m_state));
 		return (false);
 	}
-	printf("%ld %d %s", (t.tv_sec * 1000) + (t.tv_usec / 1000),
+	printf("%ld %d %s", get_time(philo->start_time_ms),
 		philo->id, (char *)state_arr[state]);
 	pthread_mutex_unlock(&(philo->shared->m_state));
 	return (true);
 }
 
-long	get_death_time(int	ttd)
+long	get_death_time(int	ttd, long start_time_ms)
+{
+	return (get_time(start_time_ms) + (ttd / 1000));
+}
+
+long	get_time(long start_time_ms)
 {
 	struct timeval	t;
 
 	gettimeofday(&t, NULL);
-	return ((t.tv_sec * 1000) + (t.tv_usec / 1000) + (ttd / 1000));
+	return ((t.tv_sec * 1000) + (t.tv_usec / 1000) - start_time_ms);
 }
 
 bool	sleep_time(int tts, t_philo *philo)
 {
-	struct	timeval t;
 	int				a;
 	long	time_stamp;
 	long	finish_time;
 
 	a = 0;
-	gettimeofday(&t, NULL);
-	time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+	time_stamp = get_time(philo->start_time_ms);
 	finish_time = time_stamp + (tts / 1000);
 	while (time_stamp < finish_time)
 	{
@@ -83,15 +86,14 @@ bool	sleep_time(int tts, t_philo *philo)
 			a = 0;
 			pthread_mutex_unlock(&(philo->shared->m_state));
 		}
-		gettimeofday(&t, NULL);
-		time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+		time_stamp = get_time(philo->start_time_ms);
 		usleep(100);
 		a += 100;
 	}
 	return (true);
 }
 
-void	__eat(t_philo *philo)
+bool	__eat(t_philo *philo)
 {
 	int	r_pos_fork;
 	int	l_pos_fork;
@@ -103,61 +105,63 @@ void	__eat(t_philo *philo)
 	else
 		r_pos_fork = philo->id - 2;
 	pthread_mutex_lock(&(philo->shared->fork[l_pos_fork]));
+	// printf("addr_mutex_%d : %p\n", l_pos_fork, (&(philo->shared->fork[l_pos_fork])));
 	//	Lock the fork
 	// pthread_mutex_lock(&(philo->shared->m_msg));
 	if (!print_state(philo, FORK))
 	{
 		pthread_mutex_unlock(&(philo->shared->fork[l_pos_fork]));
-		return ;
+		return (false);
 	}
 	// pthread_mutex_unlock(&(philo->shared->m_msg));
-
 	pthread_mutex_lock(&(philo->shared->fork[r_pos_fork]));
+	// printf("addr_mutex_%d : %p\n", r_pos_fork, (&(philo->shared->fork[r_pos_fork])));
 	//	All prerequisite are respected
 	//	Lock the fork
 	// pthread_mutex_lock(&(philo->shared->m_msg));
 	if (!print_state(philo, FORK))
 	{
-		pthread_mutex_unlock(&(philo->shared->fork[l_pos_fork]));
 		pthread_mutex_unlock(&(philo->shared->fork[r_pos_fork]));
-		return ;
+		pthread_mutex_unlock(&(philo->shared->fork[l_pos_fork]));
+		return (false);
 	}
 	// pthread_mutex_unlock(&(philo->shared->m_msg));
 
 	// pthread_mutex_lock(&(philo->shared->m_msg));
 	if (!print_state(philo, EAT))
 	{
-		pthread_mutex_unlock(&(philo->shared->fork[l_pos_fork]));
 		pthread_mutex_unlock(&(philo->shared->fork[r_pos_fork]));
-		return ;
+		pthread_mutex_unlock(&(philo->shared->fork[l_pos_fork]));
+		return (false);
 	}
 	// pthread_mutex_unlock(&(philo->shared->m_msg));
 
-	pthread_mutex_lock(&(philo->shared->m_death_time));
-	philo->shared->death_time[philo->id - 1] = get_death_time(philo->ttd);
-	pthread_mutex_unlock(&(philo->shared->m_death_time));
+	pthread_mutex_lock(&(philo->shared->m_death_time[philo->id - 1]));
+	philo->shared->death_time[philo->id - 1] = get_death_time(philo->ttd, philo->start_time_ms);
+	pthread_mutex_unlock(&(philo->shared->m_death_time[philo->id -  1]));
 
 	sleep_time(philo->tte, philo);
 	pthread_mutex_unlock(&(philo->shared->fork[r_pos_fork]));
 	pthread_mutex_unlock(&(philo->shared->fork[l_pos_fork]));
-	__sleep(philo, l_pos_fork, r_pos_fork);
+	return (__sleep(philo));
 }
 
-void	__think(t_philo *philo, int l_pos_fork, int r_pos_fork)
+bool	__think(t_philo *philo)
 {
 	// pthread_mutex_lock(&(philo->shared->m_msg));
 	if (!print_state(philo, THINK))
-		return ;
+		return (false);
 	// pthread_mutex_unlock(&(philo->shared->m_msg));
 	// usleep(1000);
+	return (true);
 }
 
-void	__sleep(t_philo *philo, int l_pos_fork, int r_pos_fork)
+bool	__sleep(t_philo *philo)
 {
 	// pthread_mutex_lock(&(philo->shared->m_msg));
 	if (!print_state(philo, SLEEP))
-		return ;
+		return (false);
 	// pthread_mutex_unlock(&(philo->shared->m_msg));
 	sleep_time(philo->tts, philo);
-	__think(philo, l_pos_fork, r_pos_fork);
+	return (__think(philo));
 }
