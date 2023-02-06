@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:36:20 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/02/06 16:05:10 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/06 19:33:02 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ typedef struct s_shared_mem
 	pthread_mutex_t		m_msg;
 	pthread_mutex_t		m_state;
 	pthread_mutex_t		*m_death_time;
+	pthread_mutex_t		m_must_eat;
+	int					must_eat;
 	int					*n_fork;
 	long				*death_time;
 	int					state;
@@ -50,7 +52,8 @@ typedef struct s_philo
 	int				tts;
 	int				pms;
 	int				id;
-	long				start_time_ms;
+	int				cycle;
+	long			start_time_ms;
 	t_shared_mem	*shared;
 	pthread_t		thread_id;
 	pthread_mutex_t	*mutex;

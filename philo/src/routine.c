@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:25:23 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/02/06 16:14:24 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/06 22:04:54 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,70 +98,62 @@ bool	__eat(t_philo *philo)
 	int	r_pos_fork;
 	int	l_pos_fork;
 
-	//	Set pos fork
 	l_pos_fork = philo->id - 1;
 	if (philo->id == 1)
 		r_pos_fork = philo->np - 1;
 	else
 		r_pos_fork = philo->id - 2;
 	pthread_mutex_lock(&(philo->shared->fork[l_pos_fork]));
-	// printf("addr_mutex_%d : %p\n", l_pos_fork, (&(philo->shared->fork[l_pos_fork])));
-	//	Lock the fork
-	// pthread_mutex_lock(&(philo->shared->m_msg));
 	if (!print_state(philo, FORK))
 	{
 		pthread_mutex_unlock(&(philo->shared->fork[l_pos_fork]));
 		return (false);
 	}
-	// pthread_mutex_unlock(&(philo->shared->m_msg));
+	if (philo->np == 1)
+		return (false);
 	pthread_mutex_lock(&(philo->shared->fork[r_pos_fork]));
-	// printf("addr_mutex_%d : %p\n", r_pos_fork, (&(philo->shared->fork[r_pos_fork])));
-	//	All prerequisite are respected
-	//	Lock the fork
-	// pthread_mutex_lock(&(philo->shared->m_msg));
 	if (!print_state(philo, FORK))
 	{
 		pthread_mutex_unlock(&(philo->shared->fork[r_pos_fork]));
 		pthread_mutex_unlock(&(philo->shared->fork[l_pos_fork]));
 		return (false);
 	}
-	// pthread_mutex_unlock(&(philo->shared->m_msg));
-
-	// pthread_mutex_lock(&(philo->shared->m_msg));
 	if (!print_state(philo, EAT))
 	{
 		pthread_mutex_unlock(&(philo->shared->fork[r_pos_fork]));
 		pthread_mutex_unlock(&(philo->shared->fork[l_pos_fork]));
 		return (false);
 	}
-	// pthread_mutex_unlock(&(philo->shared->m_msg));
 
 	pthread_mutex_lock(&(philo->shared->m_death_time[philo->id - 1]));
 	philo->shared->death_time[philo->id - 1] = get_death_time(philo->ttd, philo->start_time_ms);
 	pthread_mutex_unlock(&(philo->shared->m_death_time[philo->id -  1]));
-
 	sleep_time(philo->tte, philo);
 	pthread_mutex_unlock(&(philo->shared->fork[r_pos_fork]));
 	pthread_mutex_unlock(&(philo->shared->fork[l_pos_fork]));
+	philo->cycle++;
+	if (philo->cycle == philo->pms)
+	{
+		pthread_mutex_lock(&(philo->shared->m_must_eat));
+		philo->shared->must_eat++;
+		pthread_mutex_unlock(&(philo->shared->m_must_eat));
+		return (false);
+	}
 	return (__sleep(philo));
 }
 
 bool	__think(t_philo *philo)
 {
-	// pthread_mutex_lock(&(philo->shared->m_msg));
 	if (!print_state(philo, THINK))
 		return (false);
-	// pthread_mutex_unlock(&(philo->shared->m_msg));
-	// usleep(1000);
+	usleep(1000);
 	return (true);
 }
 
 bool	__sleep(t_philo *philo)
 {
-	// pthread_mutex_lock(&(philo->shared->m_msg));
 	if (!print_state(philo, SLEEP))
 		return (false);
-	// pthread_mutex_unlock(&(philo->shared->m_msg));
 	sleep_time(philo->tts, philo);
 	return (__think(philo));
 }
