@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:25:23 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/02/06 22:04:54 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/08 09:46:59 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ bool	__eat(t_philo *philo)
 	int	r_pos_fork;
 	int	l_pos_fork;
 
+	//This line have to be in v2 not in main.
 	l_pos_fork = philo->id - 1;
 	if (philo->id == 1)
 		r_pos_fork = philo->np - 1;

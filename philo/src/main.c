@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:16:55 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/02/06 21:54:33 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/07 19:37:38 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,8 +158,8 @@ int	main(int argc, char **argv)
 	while (++i < philo.np)
 		pthread_join(arr_philo[i].thread_id, NULL);
 	i = -1;
-	while (++i < arr_philo[0].np)
-		pthread_detach(arr_philo[i].thread_id);
+	// while (++i < arr_philo[0].np)
+	// 	pthread_detach(arr_philo[i].thread_id);
 	free_mem(arr_philo, &shared_mem);
 }
 
