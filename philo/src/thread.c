@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:32:51 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/02/08 16:49:22 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/08 17:26:41 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,7 @@ void	*thread_function(void * philo_params)
 		}
 		pthread_mutex_unlock(&(philo->shared->m_must_eat));
 		if (!__eat(philo))
-		{
-			printf("EXIT philo->id : %d\n", philo->id);
 			return (NULL);
-		}
 	}
 	return (NULL);
 }
@@ -77,7 +74,7 @@ static void	mower(t_philo *arr_philo, t_shared_mem *shared_mem)
 
 bool	init_thread(t_philo **arr_philo, t_shared_mem *shared_mem)
 {
-	int			i;
+	int	i;
 
 	i = -1;
 	while (++i < (*arr_philo)[0].np)
@@ -89,7 +86,6 @@ bool	init_thread(t_philo **arr_philo, t_shared_mem *shared_mem)
 	mower(*arr_philo, shared_mem);
 	while (i--)
 		pthread_join((*arr_philo)[i].thread_id, NULL);
-	printf("test\n");
 	return (true);
 }
 

@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:16:55 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/02/08 16:49:22 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/08 17:27:09 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,8 +116,8 @@ int	main(int argc, char **argv)
 		return (printf("ENOMEM : Out of memory\n"));
 	if (!init_thread(&arr_philo, &shared_mem))
 		return (printf("pthread_create encountered an error\n"));
-	while (++i < philo.np)
-		pthread_join(arr_philo[i].thread_id, NULL);
+	// while (++i < philo.np)
+	// 	pthread_join(arr_philo[i].thread_id, NULL);
 	// while (++i < arr_philo[0].np)
 	// 	pthread_detach(arr_philo[i].thread_id);
 	free_mem(arr_philo, &shared_mem);

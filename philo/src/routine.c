@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:25:23 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/02/08 14:49:04 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/08 17:25:40 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ bool	print_state(t_philo *philo, int state, int mutex_state)
 	if (philo->shared->state == 0)
 	{
 		bolt_fork(philo, mutex_state);
+		pthread_mutex_unlock(&(philo->shared->m_state));
 		return (false);
 	}
 	printf("%ld %d %s", get_time(philo->start_time_ms),
@@ -142,25 +143,25 @@ bool	__eat(t_philo *philo)
 {
 	set_pos_first_fork(philo);
 	set_pos_second_fork(philo);
-	printf("first block : id : %d\tfork : %d\n", philo->id, philo->first_fork);
 	pthread_mutex_lock(&(philo->shared->fork[philo->first_fork]));
+	// printf("first block : id : %d\tfork : %d\n", philo->id, philo->first_fork);
 	if (!print_state(philo, FORK, UNLOCK_A))
 		return (false);
 	if (philo->np == 1)
 		return (false);
-	printf("first unblock : %d\n", philo->id);
-	printf("second block : id : %d\tfork : %d\n", philo->id, philo->second_fork);
 	pthread_mutex_lock(&(philo->shared->fork[philo->second_fork]));
+	// printf("second block : id : %d\tfork : %d\n", philo->id, philo->second_fork);
 	if (!print_state(philo, FORK, UNLOCK_A_B))
 		return (false);
 	if (!print_state(philo, EAT, UNLOCK_A_B))
 		return (false);
-	printf("second unblock : %d\n", philo->id);
 	pthread_mutex_lock(&(philo->shared->m_death_time[philo->id - 1]));
 	philo->shared->death_time[philo->id - 1] = get_death_time(philo->ttd, philo->start_time_ms);
 	pthread_mutex_unlock(&(philo->shared->m_death_time[philo->id -  1]));
 	sleep_time(philo->tte, philo);
 	bolt_fork(philo, UNLOCK_A_B);
+	// printf("second unblock : %d\n", philo->id);
+	// printf("first unblock : %d\n", philo->id);
 	if (!philo_cycle(philo))
 		return (false);
 	return (__sleep(philo));
