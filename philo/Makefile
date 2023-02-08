@@ -38,7 +38,7 @@ $(NAME) :  $(OBJS)
 		@printf "\n"
 		@echo "Compiling done"
 
-test : $(NAME)
+test : fclean $(NAME)
 
 clean :
 		rm -rf $(OBJ_PATH)

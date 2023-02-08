@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:36:20 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/02/06 19:33:02 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/08 11:43:53 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,15 @@ typedef enum e_state {
 	EAT,
 	THINK,
 	SLEEP,
-	LENGHT
 }	t_state;
+
+typedef enum e_mutex_state {
+	LOCK,
+	UNLOCK_A,
+	UNLOCK_A_B,
+	NONE,
+	LENGHT
+}	t_mutex_state;
 
 
 typedef struct s_shared_mem
@@ -54,11 +61,12 @@ typedef struct s_philo
 	int				id;
 	int				cycle;
 	long			start_time_ms;
+	int				first_fork;
+	int				second_fork;
 	t_shared_mem	*shared;
 	pthread_t		thread_id;
 	pthread_mutex_t	*mutex;
 	int				*fork;
 }					t_philo;
-
 
 #endif

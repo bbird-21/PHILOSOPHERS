@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:16:55 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/02/07 19:37:38 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/08 16:49:22 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,44 +85,6 @@ bool	init_shared_mem(t_shared_mem *shared_mem, t_philo philo)
 	return (true);
 }
 
-static void	mower(t_philo *arr_philo, t_shared_mem *shared_mem)
-{
-	struct timeval	t;
-	long			time_stamp;
-	gettimeofday(&t, NULL);
-	time_stamp = (t.tv_sec * 1000) + (t.tv_usec / 1000);
-	int	i;
-
-	while (21)
-	{
-		i = -1;
-		gettimeofday(&t, NULL);
-		time_stamp = get_time(arr_philo[0].start_time_ms);
-		pthread_mutex_lock(&(shared_mem->m_must_eat));
-		if (shared_mem->must_eat == arr_philo[0].np)
-		{
-			pthread_mutex_unlock(&(shared_mem->m_must_eat));
-			break ;
-		}
-		pthread_mutex_unlock(&(shared_mem->m_must_eat));
-		while (++i < arr_philo[0].np)
-		{
-			pthread_mutex_lock(&(arr_philo[0].shared->m_death_time[i]));
-			if (time_stamp >= shared_mem->death_time[i])
-			{
-				pthread_mutex_lock(&(arr_philo[0].shared->m_state));
-				shared_mem->state = 0;
-				printf("%ld %d died\n", time_stamp, i + 1);
-				pthread_mutex_unlock(&(arr_philo[0].shared->m_death_time[i]));				
-				pthread_mutex_unlock(&(arr_philo[0].shared->m_state));
-				return ;
-			}
-			pthread_mutex_unlock(&(arr_philo[0].shared->m_death_time[i]));
-		}
-		usleep(1000);
-	}
-}
-
 void	free_mem(t_philo *arr_philo, t_shared_mem *shared_mem)
 {
 	int	i;
@@ -152,12 +114,10 @@ int	main(int argc, char **argv)
 		return (printf("ENOMEM : Out of memory\n"));
 	if (!init_arr_philo(&arr_philo, philo, &shared_mem))
 		return (printf("ENOMEM : Out of memory\n"));
-	if (!init_thread(&arr_philo))
+	if (!init_thread(&arr_philo, &shared_mem))
 		return (printf("pthread_create encountered an error\n"));
-	mower(arr_philo, &shared_mem);
 	while (++i < philo.np)
 		pthread_join(arr_philo[i].thread_id, NULL);
-	i = -1;
 	// while (++i < arr_philo[0].np)
 	// 	pthread_detach(arr_philo[i].thread_id);
 	free_mem(arr_philo, &shared_mem);

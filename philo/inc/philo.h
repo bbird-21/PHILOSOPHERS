@@ -6,7 +6,7 @@
 /*   By: mmeguedm <mmeguedm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:35:44 by mmeguedm          #+#    #+#             */
-/*   Updated: 2023/02/06 16:11:12 by mmeguedm         ###   ########.fr       */
+/*   Updated: 2023/02/08 12:09:41 by mmeguedm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 # include <string.h>
 
 /*	<thread.c>	*/
-bool	print_state(t_philo *philo, int state);
-bool	init_thread(t_philo **arr_philo);
+bool	print_state(t_philo *philo, int state, int mutex_state);
+bool	init_thread(t_philo **arr_philo, t_shared_mem *t_shared_mem);
 
 /*	<parsing.c>	*/
 int		parse_args(char *str);
